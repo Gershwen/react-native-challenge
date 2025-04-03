@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Image, FlatList, StyleSheet, Platform, View, Text } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+
+
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, View, Text, Button } from 'react-native';
+import { useRouter } from 'expo-router';
 import { api } from '@/services/api';
 
 interface ApiResponse {
@@ -13,81 +13,59 @@ interface ApiResponse {
 }
 
 export default function HomeScreen() {
-  const [data, setData] = useState<ApiResponse[]>([]); 
+  const [data, setData] = useState<ApiResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState<number>(1); // Track the current page
-  const [hasMore, setHasMore] = useState<boolean>(true); // To check if there are more pages
+  const router = useRouter(); // ✅ Use Expo Router for navigation
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await api(page); // Pass the current page to the API
-        if (result.length < 10) {
-          setHasMore(false); 
-        }
-        setData((prevData) => [...prevData, ...result]); // Append new data to existing data
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-  
     fetchData();
-  }, [page]); // Re-fetch data when the page changes
-  
-  // Handle loading more items when the user reaches the end of the list
-  const handleLoadMore = () => {
-    if (!loading && hasMore) {
+  }, []);
+
+
+  const fetchData = async () => {
+    try {
       setLoading(true);
-      setPage((prevPage) => prevPage + 1); // Increment the page number to fetch next data
+      const result = await api.get("1"); // ✅ Call `get` method correctly
+      setData(result);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
+  
 
-  if (loading && page === 1) {
-    return <ThemedText>Loading...</ThemedText>;
+  if (loading) {
+    return <Text>Loading...</Text>;
   }
 
   if (error) {
-    return <ThemedText>Error: {error}</ThemedText>;
+    return <Text>Error: {error}</Text>;
   }
 
-  // Render the data in a list
   return (
-    <FlatList
-      ListHeaderComponent={
-        <>
-          <ThemedView style={styles.titleContainer}>
-            <ThemedText type="title">Welcome!</ThemedText>
-            <HelloWave />
-          </ThemedView>
-        </>
-      }
-      data={data}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <View style={styles.listItem}>
-          <Text>{item.title}</Text>
-          <Text>{item.body}</Text>
-        </View>
-      )}
-      onEndReached={handleLoadMore} // Trigger to load more data when reaching the end
-      onEndReachedThreshold={0.5}
-      ListFooterComponent={loading && hasMore ? <ThemedText>Loading more...</ThemedText> : null} // Show a loading indicator when fetching more data
-    />
+    <View style={styles.container}>
+      <Button title="Edit Posts" onPress={() => router.push('./edit')} />; 
+
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.listItem}>
+            <Text>{item.title}</Text>
+            <Text>{item.body}</Text>
+          </View>
+        )}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  listContainer: {
-    marginVertical: 20,
-    paddingHorizontal: 15,
+  container: {
+    flex: 1,
+    padding: 10,
   },
   listItem: {
     marginBottom: 10,
