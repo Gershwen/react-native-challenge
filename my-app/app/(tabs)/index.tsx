@@ -1,6 +1,4 @@
 
-
-
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View, Text, Button } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -16,7 +14,7 @@ export default function HomeScreen() {
   const [data, setData] = useState<ApiResponse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const router = useRouter(); // ✅ Use Expo Router for navigation
+  const router = useRouter(); 
 
   useEffect(() => {
     fetchData();
@@ -26,7 +24,7 @@ export default function HomeScreen() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const result = await api.get("1"); // ✅ Call `get` method correctly
+      const result = await api.get("1");
       setData(result);
     } catch (err: any) {
       setError(err.message);
@@ -46,8 +44,6 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <Button title="Edit Posts" onPress={() => router.push('./edit')} />; 
-
       <FlatList
         data={data}
         keyExtractor={(item) => item.id.toString()}
@@ -55,6 +51,10 @@ export default function HomeScreen() {
           <View style={styles.listItem}>
             <Text>{item.title}</Text>
             <Text>{item.body}</Text>
+            <Button
+              title="Edit"
+              onPress={() => router.push(`../edit/${item.id}`)} // Navigate to edit screen with item ID
+            />
           </View>
         )}
       />
