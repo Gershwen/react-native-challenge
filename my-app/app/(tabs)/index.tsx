@@ -24,7 +24,7 @@ export default function HomeScreen() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const result = await api.get("1");
+      const result = await api.get(1);
       setData(result);
     } catch (err: any) {
       setError(err.message);
