@@ -1,7 +1,7 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, Text, Button } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { api } from '@/services/api';
 
 interface ApiResponse {
@@ -16,11 +16,6 @@ export default function HomeScreen() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter(); 
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -32,7 +27,13 @@ export default function HomeScreen() {
       setLoading(false);
     }
   };
-  
+
+  // ✅ Re-fetch data when screen is focused (after returning from edit page)
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -53,7 +54,7 @@ export default function HomeScreen() {
             <Text>{item.body}</Text>
             <Button
               title="Edit"
-              onPress={() => router.push(`../edit/${item.id}`)} // Navigate to edit screen with item ID
+              onPress={() => router.push(`/edit/${item.id}`)} // ✅ Use absolute path
             />
           </View>
         )}
