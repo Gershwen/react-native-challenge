@@ -13,17 +13,6 @@ export default function EditPostScreen() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // const fetchPost = async () => {
-    //   try {
-    //     const response = await api.get(`/posts/${id}`);
-    //     setTitle(response.data.title);
-    //     setBody(response.data.body);
-    //   } catch (error) {
-    //     Alert.alert('Error', 'Could not fetch post details');
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
     const fetchPost = async () => {
       try {
         const postId = Number(id);
@@ -31,7 +20,7 @@ export default function EditPostScreen() {
     
         console.log(`Fetching post with ID: ${postId}`);
     
-        const response = await api.getPostById(postId);  // ✅ Use new method
+        const response = await api.getPostById(postId);
         console.log('API Response:', response);
     
         setTitle(response.title);
@@ -57,7 +46,7 @@ export default function EditPostScreen() {
     try {
       const postId = Number(id); // Convert to number
       if (isNaN(postId)) throw new Error('Invalid post ID');
-      // await api.put(`/posts/${id}`, { title, body });
+
       Alert.alert('Success', 'Post updated successfully', [
         { text: 'OK', onPress: () => router.push('/') },
       ]);

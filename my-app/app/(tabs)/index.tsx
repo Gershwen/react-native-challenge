@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { FlatList, StyleSheet, View, Text, Button } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { api } from '@/services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface ApiResponse {
   id: number;
@@ -28,7 +29,23 @@ export default function HomeScreen() {
     }
   };
 
-  // ✅ Re-fetch data when screen is focused (after returning from edit page)
+  // store data in AsyncStorage
+    const storeData = async (value) => {
+        console.log('storeData', value);
+      try {
+        const jsonValue = JSON.stringify(value);
+        await AsyncStorage.setItem('my-key', jsonValue);
+      } catch (e) {
+        console.error(e)
+      }
+    };
+
+  useEffect(() => {
+    storeData(data);
+  }, [data]);
+
+
+  // Re-fetch data when screen is focused (after returning from edit page)
   useFocusEffect(
     useCallback(() => {
       fetchData();
@@ -54,7 +71,7 @@ export default function HomeScreen() {
             <Text>{item.body}</Text>
             <Button
               title="Edit"
-              onPress={() => router.push(`/edit/${item.id}`)} // ✅ Use absolute path
+              onPress={() => router.push(`/edit/${item.id}`)}
             />
           </View>
         )}
@@ -69,9 +86,15 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   listItem: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap:10,
+    borderWidth: 1,
+    borderColor: '#ccc',
     marginBottom: 10,
     padding: 10,
     backgroundColor: '#f0f0f0',
     borderRadius: 5,
   },
+
 });

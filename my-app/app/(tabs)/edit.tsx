@@ -52,7 +52,7 @@ export default function EditScreen() {
 
   return (
     <View style={styles.container}>
-      <Button title="Back to Home" onPress={() => router.push('/')} />
+      <Button title="Back to Home" onPress={() => router.push('/index')} />
       <TextInput
         placeholder="Post ID (for update/delete)"
         value={postId}
