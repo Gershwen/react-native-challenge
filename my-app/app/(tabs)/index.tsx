@@ -40,8 +40,25 @@ export default function HomeScreen() {
       }
     };
 
+  // Retrieve data from AsyncStorage on component mount
   useEffect(() => {
-    storeData(data);
+    const retrieveData = async () => {
+      try {
+        const jsonValue = await AsyncStorage.getItem('my-key');
+        if (jsonValue != null) {
+          setData(JSON.parse(jsonValue));
+        }
+      } catch (e) {
+        console.error('Error retrieving data from AsyncStorage:', e);
+      }
+    };
+    retrieveData();
+  }, []);
+
+  useEffect(() => {
+      if(data.length > 0){
+          storeData(data);
+          }
   }, [data]);
 
 
